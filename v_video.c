@@ -341,6 +341,62 @@ V_DrawPatchFlipped
 // V_DrawPatchDirect
 // Draws directly to the screen on the pc. 
 //
+#if defined PORTRAIT
+void
+V_DrawPatchDirect
+( int		x,
+  int		y,
+  int		scrn,
+  patch_t*	patch ) 
+{
+    int		count;
+    int		col; 
+    column_t*	column; 
+    byte*	desttop;
+    byte*	dest;
+    byte*	source; 
+    int		w;
+    int     bitplane;
+	 
+    y -= SHORT(patch->topoffset); 
+    x -= SHORT(patch->leftoffset); 
+
+    w = SHORT(patch->width);
+
+    for ( col = 0 ; col<w ; col++) 
+    {
+        column = (column_t *)((byte *)patch + LONG(patch->columnofs[col])); 
+    
+        // for each pixel in a column
+        while (column->topdelta != 0xff ) 
+        { 
+            // transpose top of column to left of row
+            desttop = destscreen + (SCREENWIDTH-x++)*SCREENWIDTH/4 + (y>>2);
+
+            source = (byte *)column + 3; 
+            dest = desttop + column->topdelta;
+            count = column->length; 
+            bitplane = y + column->topdelta;
+
+            while (count--) 
+            {
+                // next bitplane
+                outp (SC_INDEX+1,1<<(bitplane&3));
+                bitplane++;
+
+                // write pixel
+                *dest = *source++;
+
+                // next address in bitplane
+                if((bitplane&3) == 0)
+                    *dest++;
+            }
+
+            column = (column_t *)(  (byte *)column + column->length + 4 ); 
+        } 
+    }
+} 
+#else
 void
 V_DrawPatchDirect
 ( int		x,
@@ -399,7 +455,7 @@ V_DrawPatchDirect
 	    desttop++;	// go to next byte, not next plane 
     }
 } 
- 
+#endif
 
 
 //
