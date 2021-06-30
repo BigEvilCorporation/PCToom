@@ -441,7 +441,11 @@ typedef struct
 
 } spritedef_t;
 
-
+#if defined PORTRAIT
+typedef unsigned short visheight;
+#else
+typedef byte visheight;
+#endif
 
 //
 // Now what is a visplane, anyway?
@@ -456,15 +460,15 @@ typedef struct
   
   // leave pads for [minx-1]/[maxx+1]
   
-  byte		pad1;
+  visheight		pad1;
   // Here lies the rub for all
   //  dynamic resize/change of resolution.
-  byte		top[SCREENWIDTH];
-  byte		pad2;
-  byte		pad3;
+  visheight		top[SCREENWIDTH];
+  visheight		pad2;
+  visheight		pad3;
   // See above.
-  byte		bottom[SCREENWIDTH];
-  byte		pad4;
+  visheight		bottom[SCREENWIDTH];
+  visheight		pad4;
 
 } visplane_t;
 

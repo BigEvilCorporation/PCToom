@@ -64,8 +64,8 @@ short			ceilingclip[SCREENWIDTH];
 // spanstart holds the start of a plane span
 // initialized to 0 at start
 //
-int			spanstart[SCREENHEIGHT];
-int			spanstop[SCREENHEIGHT];
+int			spanstart[VIEWPORTHEIGHT];
+int			spanstop[VIEWPORTHEIGHT];
 
 //
 // texture mapping
@@ -73,15 +73,15 @@ int			spanstop[SCREENHEIGHT];
 lighttable_t**		planezlight;
 fixed_t			planeheight;
 
-fixed_t			yslope[SCREENHEIGHT];
+fixed_t			yslope[VIEWPORTHEIGHT];
 fixed_t			distscale[SCREENWIDTH];
 fixed_t			basexscale;
 fixed_t			baseyscale;
 
-fixed_t			cachedheight[SCREENHEIGHT];
-fixed_t			cacheddistance[SCREENHEIGHT];
-fixed_t			cachedxstep[SCREENHEIGHT];
-fixed_t			cachedystep[SCREENHEIGHT];
+fixed_t			cachedheight[VIEWPORTHEIGHT];
+fixed_t			cacheddistance[VIEWPORTHEIGHT];
+fixed_t			cachedxstep[VIEWPORTHEIGHT];
+fixed_t			cachedystep[VIEWPORTHEIGHT];
 
 
 
@@ -288,7 +288,7 @@ R_CheckPlane
     }
 
     for (x=intrl ; x<= intrh ; x++)
-	if (pl->top[x] != 0xff)
+	if (pl->top[x] != -1)
 	    break;
 
     if (x > intrh)
@@ -426,8 +426,8 @@ void R_DrawPlanes (void)
 
 	planezlight = zlight[light];
 
-	pl->top[pl->maxx+1] = 0xff;
-	pl->top[pl->minx-1] = 0xff;
+	pl->top[pl->maxx+1] = -1;
+	pl->top[pl->minx-1] = -1;
 		
 	stop = pl->maxx + 1;
 

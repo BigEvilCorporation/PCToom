@@ -688,12 +688,16 @@ void R_ExecuteSetViewSize (void)
     if (setblocks == 11)
     {
 	scaledviewwidth = SCREENWIDTH;
-	viewheight = SCREENHEIGHT;
+	viewheight = VIEWPORTHEIGHT;
     }
     else
     {
 	scaledviewwidth = setblocks*32;
+#if PORTRAIT
+	viewheight = VIEWPORTHEIGHT;
+#else
 	viewheight = (setblocks*168/10)&~7;
+#endif	
     }
     
     detailshift = setdetail;

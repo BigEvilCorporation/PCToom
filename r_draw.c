@@ -103,7 +103,7 @@ byte*			dc_source;
 // just for profiling 
 int			dccount;
 
-#if 0
+#if defined PORTRAIT
 //
 // A column is a vertical slice/span from a wall texture that,
 //  given the DOOM style restrictions on the view orientation,
@@ -127,7 +127,7 @@ void R_DrawColumn (void)
 #ifdef RANGECHECK 
     if ((unsigned)dc_x >= SCREENWIDTH
 	|| dc_yl < 0
-	|| dc_yh >= SCREENHEIGHT) 
+	|| dc_yh >= VIEWPORTHEIGHT) 
 	I_Error ("R_DrawColumn: %i to %i at %i", dc_yl, dc_yh, dc_x); 
 #endif 
 
@@ -150,14 +150,18 @@ void R_DrawColumn (void)
 	//  using a lighting/special effects LUT.
 	*dest = dc_colormap[dc_source[(frac>>FRACBITS)&127]];
 	
+#if defined PORTRAIT
+	dest += 1; 
+#else
 	dest += SCREENWIDTH; 
+#endif
 	frac += fracstep;
 	
     } while (count--); 
 } 
+#endif
 
-
-
+#if 0
 // UNUSED.
 // Loop unrolled.
 void R_DrawColumn (void) 
@@ -213,8 +217,9 @@ void R_DrawColumn (void)
 	count--;
     } 
 }
+#endif
 
-
+#if defined PORTRAIT
 void R_DrawColumnLow (void) 
 { 
     int			count; 
@@ -232,7 +237,7 @@ void R_DrawColumnLow (void)
 #ifdef RANGECHECK 
     if ((unsigned)dc_x >= SCREENWIDTH
 	|| dc_yl < 0
-	|| dc_yh >= SCREENHEIGHT)
+	|| dc_yh >= VIEWPORTHEIGHT)
     {
 	
 	I_Error ("R_DrawColumn: %i to %i at %i", dc_yl, dc_yh, dc_x);
@@ -252,8 +257,13 @@ void R_DrawColumnLow (void)
     {
 	// Hack. Does not work corretly.
 	*dest2 = *dest = dc_colormap[dc_source[(frac>>FRACBITS)&127]];
+#if defined PORTRAIT
+	dest += 1;
+	dest2 += 1;
+#else
 	dest += SCREENWIDTH;
 	dest2 += SCREENWIDTH;
+#endif
 	frac += fracstep; 
 
     } while (count--);
@@ -314,7 +324,7 @@ void R_DrawFuzzColumn (void)
     
 #ifdef RANGECHECK 
     if ((unsigned)dc_x >= SCREENWIDTH
-	|| dc_yl < 0 || dc_yh >= SCREENHEIGHT)
+	|| dc_yl < 0 || dc_yh >= VIEWPORTHEIGHT)
     {
 	I_Error ("R_DrawFuzzColumn: %i to %i at %i",
 		 dc_yl, dc_yh, dc_x);
@@ -396,7 +406,7 @@ void R_DrawTranslatedColumn (void)
 #ifdef RANGECHECK 
     if ((unsigned)dc_x >= SCREENWIDTH
 	|| dc_yl < 0
-	|| dc_yh >= SCREENHEIGHT)
+	|| dc_yh >= VIEWPORTHEIGHT)
     {
 	I_Error ( "R_DrawColumn: %i to %i at %i",
 		  dc_yl, dc_yh, dc_x);
@@ -508,7 +518,7 @@ byte*			ds_source;
 int			dscount;
 
 
-#if 0
+#if defined PORTRAIT
 //
 // Draws the actual span.
 void R_DrawSpan (void) 
@@ -517,13 +527,13 @@ void R_DrawSpan (void)
     fixed_t		yfrac; 
     byte*		dest; 
     int			count;
-    int			spot; 
+    int			spot;
 	 
 #ifdef RANGECHECK 
     if (ds_x2 < ds_x1
 	|| ds_x1<0
 	|| ds_x2>=SCREENWIDTH  
-	|| (unsigned)ds_y>SCREENHEIGHT)
+	|| ds_y>VIEWPORTHEIGHT)
     {
 	I_Error( "R_DrawSpan: %i to %i at %i",
 		 ds_x1,ds_x2,ds_y);
@@ -547,7 +557,12 @@ void R_DrawSpan (void)
 
 	// Lookup pixel from flat texture tile,
 	//  re-index using light/colormap.
+#if defined PORTRAIT
+	*dest = ds_colormap[ds_source[spot]];
+    dest += SCREENWIDTH;
+#else
 	*dest++ = ds_colormap[ds_source[spot]];
+#endif
 
 	// Next step in u,v.
 	xfrac += ds_xstep; 
@@ -555,9 +570,9 @@ void R_DrawSpan (void)
 	
     } while (count--); 
 } 
+#endif
 
-
-
+#if 0
 // UNUSED.
 // Loop unrolled by 4.
 void R_DrawSpan (void) 
@@ -627,8 +642,9 @@ void R_DrawSpan (void)
 	count--;
     } 
 } 
+#endif
 
-
+#if defined PORTRAIT
 //
 // Again..
 //
@@ -644,7 +660,7 @@ void R_DrawSpanLow (void)
     if (ds_x2 < ds_x1
 	|| ds_x1<0
 	|| ds_x2>=SCREENWIDTH  
-	|| (unsigned)ds_y>SCREENHEIGHT)
+	|| ds_y>VIEWPORTHEIGHT)
     {
 	I_Error( "R_DrawSpan: %i to %i at %i",
 		 ds_x1,ds_x2,ds_y);
@@ -668,8 +684,15 @@ void R_DrawSpanLow (void)
 	spot = ((yfrac>>(16-6))&(63*64)) + ((xfrac>>16)&63);
 	// Lowres/blocky mode does it twice,
 	//  while scale is adjusted appropriately.
+#if defined PORTRAIT
+	*dest = ds_colormap[ds_source[spot]];
+    dest += SCREENWIDTH;
+	*dest = ds_colormap[ds_source[spot]];
+    dest += SCREENWIDTH;
+#else
 	*dest++ = ds_colormap[ds_source[spot]]; 
 	*dest++ = ds_colormap[ds_source[spot]];
+#endif
 	
 	xfrac += ds_xstep; 
 	yfrac += ds_ystep; 
@@ -699,7 +722,11 @@ R_InitBuffer
 
     // Column offset. For windows.
     for (i=0 ; i<width ; i++) 
+#if defined PORTRAIT
+	columnofs[i] = screens[0] + (i+viewwindowy)*SCREENWIDTH;
+#else
 	columnofs[i] = viewwindowx + i;
+#endif	
 
     // Samw with base row offset.
     if (width == SCREENWIDTH) 
@@ -708,8 +735,12 @@ R_InitBuffer
 	viewwindowy = (SCREENHEIGHT-SBARHEIGHT-height) >> 1; 
 
     // Preclaculate all row offsets.
-    for (i=0 ; i<height ; i++) 
+    for (i=0 ; i<height ; i++)
+#if defined PORTRAIT
+	ylookup[i] = viewwindowx + i;
+#else
 	ylookup[i] = screens[0] + (i+viewwindowy)*SCREENWIDTH; 
+#endif
 } 
  
  

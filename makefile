@@ -23,7 +23,7 @@
 #
 # --------------------------------------------------------------------------
 
-CCOPTS = /d2 /omaxet /zp1 /4r /ei /j /zq /i=dmx
+CCOPTS = /d2 /omaxet /zp1 /4r /ei /j /zq /i=dmx /dPORTRAIT=1
 
 GLOBOBJS = &
  i_main.obj &
@@ -31,7 +31,6 @@ GLOBOBJS = &
  i_sound.obj &
  i_cyber.obj &
  i_ibm_a.obj &
- planar.obj &
  tables.obj &
  f_finale.obj &
  d_main.obj &

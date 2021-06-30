@@ -253,7 +253,7 @@ void D_Display (void)
 	if (inhelpscreensstate && !inhelpscreens)
 	    redrawsbar = true;              // just put away the help screen
 	ST_Drawer (viewheight == 200, redrawsbar );
-	fullscreen = viewheight == 200;
+	fullscreen = viewheight == VIEWPORTHEIGHT;
 	break;
 
       case GS_INTERMISSION:

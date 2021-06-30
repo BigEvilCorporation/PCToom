@@ -63,6 +63,13 @@ enum { VERSION =  109 };
 #define SCREENHEIGHT 200
 //(int)(SCREEN_MUL*BASE_WIDTH*INV_ASPECT_RATIO) //200
 
+// In portrait mode, viewport is WIDTH*WIDTH
+#if defined PORTRAIT
+#define VIEWPORTHEIGHT SCREENWIDTH
+#else
+#define VIEWPORTHEIGHT SCREENHEIGHT
+#endif
+
 #define	FRACBITS		16
 #define	FRACUNIT		(1<<FRACBITS)
 typedef int fixed_t;

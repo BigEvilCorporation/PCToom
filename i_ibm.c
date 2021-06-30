@@ -448,7 +448,8 @@ void I_UpdateNoBlit(void)
         y = realdr[BOXBOTTOM];
         w = realdr[BOXRIGHT] - realdr[BOXLEFT] + 1;
         h = realdr[BOXTOP] - realdr[BOXBOTTOM] + 1;
-        I_UpdateBox(x, y, w, h);
+        //I_UpdateBox(x, y, w, h);
+        I_UpdateBox(0, 0, SCREENWIDTH, SCREENHEIGHT);
     }
     // Clear box
     M_ClearBox(dirtybox);
