@@ -334,8 +334,6 @@ V_DrawPatchFlipped
 	} 
     }			 
 } 
- 
-
 
 //
 // V_DrawPatchDirect
@@ -347,55 +345,58 @@ V_DrawPatchDirect
 ( int		x,
   int		y,
   int		scrn,
-  patch_t*	patch ) 
+  patch_t*	patch )
 {
     int		count;
-    int		col; 
-    column_t*	column; 
-    byte*	desttop;
+    int		col;
+    column_t* postHdr;
     byte*	dest;
-    byte*	source; 
+    byte*   destx;
+    byte*	source;
     int		w;
     int     bitplane;
 	 
-    y -= SHORT(patch->topoffset); 
-    x -= SHORT(patch->leftoffset); 
-
+    y -= SHORT(patch->topoffset);
+    x -= SHORT(patch->leftoffset);
     w = SHORT(patch->width);
 
-    for ( col = 0 ; col<w ; col++) 
+    // for each column in patch
+    for (col = 0; col < w; col++)
     {
-        column = (column_t *)((byte *)patch + LONG(patch->columnofs[col])); 
-    
-        // for each pixel in a column
-        while (column->topdelta != 0xff ) 
-        { 
-            // transpose top of column to left of row
-            desttop = destscreen + (SCREENWIDTH-x++)*SCREENWIDTH/4 + (y>>2);
+        postHdr = (column_t*)((byte*)patch + LONG(patch->columnofs[col]));
 
-            source = (byte *)column + 3; 
-            dest = desttop + column->topdelta;
-            count = column->length; 
-            bitplane = y + column->topdelta;
+        // for each vertical post segment in column
+        while (postHdr->topdelta != 0xff)
+        {
+            source = (byte*)postHdr + sizeof(column_t); // data at end of header
+            count = postHdr->length;
+            bitplane = (y + postHdr->topdelta);
 
-            while (count--) 
+            // transpose top/left to left/top
+            dest = destscreen + (SCREENWIDTH-x)*(SCREENWIDTH/4) + ((y+postHdr->topdelta)/4);
+
+            // for each pixel in post segment
+            while (count--)
             {
                 // next bitplane
-                outp (SC_INDEX+1,1<<(bitplane&3));
-                bitplane++;
+                outp(SC_INDEX+1, 1<<(bitplane++&3));
 
                 // write pixel
                 *dest = *source++;
 
                 // next address in bitplane
-                if((bitplane&3) == 0)
+                if ((bitplane&3) == 0)
                     *dest++;
             }
 
-            column = (column_t *)(  (byte *)column + column->length + 4 ); 
-        } 
+            // next post segment
+            postHdr = (column_t*)((byte*)postHdr + postHdr->length + 4);
+        }
+
+        // next column
+        ++x;
     }
-} 
+}
 #else
 void
 V_DrawPatchDirect
