@@ -31,7 +31,8 @@
 #include "v_video.h"
 
 
-// Each screen is [SCREENWIDTH*SCREENHEIGHT]; 
+// Each screen is [SCREENWIDTH*SCREENHEIGHT];
+//  mattp - except screens[4] which is [ST_WIDTH*ST_HEIGHT]
 byte*				screens[5];	
  
 int				dirtybox[4]; 
@@ -175,6 +176,10 @@ V_CopyRect
 { 
     byte*	src;
     byte*	dest; 
+
+    // mattp TODO: screens[4] is ST_WIDTH*ST_HEIGHT
+    if(srcscrn==4 || destscrn==4)
+        return;
 	 
 #ifdef RANGECHECK 
     if (srcx<0
@@ -208,6 +213,71 @@ V_CopyRect
 // V_DrawPatch
 // Masks a column based masked pic to the screen. 
 //
+#if defined PORTRAIT
+void
+V_DrawPatch
+( int		x,
+  int		y,
+  int		scrn,
+  patch_t*	patch ) 
+{ 
+    int		count;
+    int		col; 
+    column_t*	column; 
+    byte*	desttop;
+    byte*	dest;
+    byte*	source; 
+    int		w;
+
+    y -= SHORT(patch->topoffset);
+    x -= SHORT(patch->leftoffset);
+    w = SHORT(patch->width);
+
+    // mattp TODO: screens[4] is ST_WIDTH*ST_HEIGHT
+    if(scrn==4)
+        return;
+
+    if (!scrn)
+        V_MarkRect (y, SCREENWIDTH-1-x, SHORT(patch->height), SHORT(patch->width));
+
+    // transpose top/left to left/top
+    desttop = screens[scrn] + ((SCREENWIDTH-1-x)*SCREENWIDTH) + y;
+
+    // for each column in patch
+    for (col = 0; col < w; x++, col++)
+    { 
+        column = (column_t*)((byte*)patch + LONG(patch->columnofs[col]));
+
+        // skip overdraw until we're within range (means we've missed some UI placement in portrait mode)
+        if(desttop >= (screens[scrn]+(SCREENWIDTH*SCREENHEIGHT)))
+        {
+            desttop -= SCREENWIDTH;
+            continue;
+        }
+
+        // for each vertical post segment in column
+        while (column->topdelta != 0xff ) 
+        { 
+            source = (byte*)column + sizeof(column_t); 
+            dest = desttop + column->topdelta; 
+            count = column->length; 
+                
+            // for each pixel in post segment
+            while (count--) 
+            {
+                //if(dest >= (screens[scrn]+(SCREENWIDTH*34)))// && dest < (screens[scrn]+(SCREENWIDTH*(SCREENHEIGHT-40))))
+                *dest++ = *source++;
+            }
+
+            // next post segment
+            column = (column_t*)((byte*)column + column->length + 4); 
+        }
+
+        // next column
+        desttop -= SCREENWIDTH;
+    }			 
+} 
+#else
 void
 V_DrawPatch
 ( int		x,
@@ -269,7 +339,8 @@ V_DrawPatch
 	} 
     }			 
 } 
- 
+#endif
+
 //
 // V_DrawPatchFlipped 
 // Masks a column based masked pic to the screen.
@@ -355,6 +426,10 @@ V_DrawPatchDirect
     byte*	source;
     int		w;
     int     bitplane;
+
+    // mattp TODO: screens[4] is ST_WIDTH*ST_HEIGHT
+    if(scrn==4)
+        return;
 	 
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
@@ -373,7 +448,7 @@ V_DrawPatchDirect
             bitplane = (y + postHdr->topdelta);
 
             // transpose top/left to left/top
-            dest = destscreen + (SCREENWIDTH-x)*(SCREENWIDTH/4) + ((y+postHdr->topdelta)/4);
+            dest = destscreen + (SCREENWIDTH-1-x)*(SCREENWIDTH/4) + ((y+postHdr->topdelta)/4);
 
             // for each pixel in post segment
             while (count--)
