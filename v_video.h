@@ -72,6 +72,15 @@ V_DrawPatch
   int		scrn,
   patch_t*	patch);
 
+#if defined PORTRAIT
+void
+V_DrawPatch
+( int		x,
+  int		y,
+  int		scrn,
+  patch_t*	patch);
+#endif
+
 void
 V_DrawPatchDirect
 ( int		x,

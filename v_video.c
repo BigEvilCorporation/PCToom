@@ -338,9 +338,12 @@ V_DrawPatch
         desttop -= SCREENWIDTH;
     }			 
 } 
+void
+V_DrawPatchNonTransposed
 #else
 void
 V_DrawPatch
+#endif
 ( int		x,
   int		y,
   int		scrn,
@@ -400,7 +403,6 @@ V_DrawPatch
 	} 
     }			 
 } 
-#endif
 
 //
 // V_DrawPatchFlipped 
@@ -422,6 +424,7 @@ V_DrawPatchFlipped
     byte*	dest;
     byte*	source; 
     int		w; 
+    return;
 	 
     y -= SHORT(patch->topoffset); 
     x -= SHORT(patch->leftoffset); 

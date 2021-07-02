@@ -492,10 +492,17 @@ void ST_refreshBackground(void)
 
     if (st_statusbaron)
     {
+#if defined PORTRAIT
+	V_DrawPatchNonTransposed(ST_X, 0, BG, sbar);
+
+	if (netgame)
+	    V_DrawPatchNonTransposed(ST_FX, 0, BG, faceback);
+#else
 	V_DrawPatch(ST_X, 0, BG, sbar);
 
 	if (netgame)
 	    V_DrawPatch(ST_FX, 0, BG, faceback);
+#endif
 
 	V_CopyRect(ST_X, 0, BG, ST_WIDTH, ST_HEIGHT, ST_X, ST_Y, FG);
     }
