@@ -1150,6 +1150,7 @@ void M_ChangeSensitivity(int choice)
 
 void M_ChangeDetail(int choice)
 {
+#if !defined PORTRAIT // mattp TODO: crashes changing at runtime in portrait mode
     choice = 0;
     detailLevel = 1 - detailLevel;
 
@@ -1159,6 +1160,7 @@ void M_ChangeDetail(int choice)
 	players[consoleplayer].message = DETAILHI;
     else
 	players[consoleplayer].message = DETAILLO;
+#endif
 }
 
 
@@ -1166,6 +1168,7 @@ void M_ChangeDetail(int choice)
 
 void M_SizeDisplay(int choice)
 {
+#if !defined PORTRAIT // mattp TODO: crashes changing at runtime in portrait mode
     switch(choice)
     {
       case 0:
@@ -1186,6 +1189,7 @@ void M_SizeDisplay(int choice)
 	
 
     R_SetViewSize (screenblocks, detailLevel);
+#endif
 }
 
 

@@ -377,7 +377,11 @@ default_t	defaults[] =
     {"joyb_use",&joybuse,3},
     {"joyb_speed",&joybspeed,2},
 
+#if defined PORTRAIT
+    {"screenblocks",&screenblocks, 10}, // default to proper fullscreen in portrait mode, or what's the point
+#else
     {"screenblocks",&screenblocks, 9},
+#endif
     {"detaillevel",&detailLevel, 0},
 
     {"snd_channels",&numChannels, 3},
