@@ -162,7 +162,73 @@ V_MarkRect
 
 //
 // V_CopyRect 
-// 
+//
+#if defined PORTRAIT
+void
+V_CopyRect
+( int		srcx,
+  int		srcy,
+  int		srcscrn,
+  int		width,
+  int		height,
+  int		destx,
+  int		desty,
+  int		destscrn ) 
+{
+    byte*	src;
+    byte*	dst;
+    int     x,y;
+    int     srcscrnh;
+
+    // screens[4] is ST_HEIGHT tall
+    if (srcscrn == BG)
+        srcscrnh = ST_HEIGHT;
+    else
+        srcscrnh = SCREENHEIGHT;
+
+#ifdef RANGECHECK
+    if (destscrn == BG)
+        I_Error("V_CopyRect() - BG as dest screen not supported");
+
+    if(srcy+height > srcscrnh)
+        I_Error("V_CopyRect() - Src y out of range (%i, %i)", srcy, srcscrnh);
+
+    // skip if completely off screen (means we've missed some UI placement in portrait mode)
+    if(destx+width < SCREENWIDTH-SCREENHEIGHT)
+        return;
+#endif
+
+    V_MarkRect (desty, SCREENWIDTH-1-destx, height, width);
+
+    // skip overdraw until we're within range (means we've missed some UI placement in portrait mode)
+    if(srcx < SCREENWIDTH-SCREENHEIGHT)
+    {
+        width -= (SCREENWIDTH-SCREENHEIGHT) - srcx;
+        destx += (SCREENWIDTH-SCREENHEIGHT) - srcx;
+        srcx = SCREENWIDTH-SCREENHEIGHT;
+    }
+
+    for (y = 0; y < height; y++)
+    {
+        src = screens[srcscrn] + (srcy+y)*SCREENWIDTH + srcx;
+        dst = screens[destscrn] + (SCREENWIDTH-1-destx)*SCREENWIDTH + (desty+y);
+
+        x = width;
+        while(x--)
+        {
+#ifdef RANGECHECK
+            if(src < screens[srcscrn] || src >= (screens[srcscrn]+(SCREENWIDTH*srcscrnh)))
+                I_Error("V_CopyRect() - Src out of range (%i,%i) (%ix%i) (%ix%i) (0x%08x) (0x%08x-0x%08x)", srcx+x,srcy+y,SCREENWIDTH,srcscrnh,width,height,src,screens[srcscrn],screens[srcscrn]+(SCREENWIDTH*srcscrnh));
+            if(dst < screens[destscrn] || dst >= (screens[destscrn]+(SCREENWIDTH*SCREENHEIGHT)))
+                I_Error("V_CopyRect() - Dst out of range (%i,%i) (%ix%i) (%ix%i) (0x%08x) (0x%08x-0x%08x)", destx+x,desty+y,SCREENWIDTH,SCREENHEIGHT,width,height,src,screens[destscrn],screens[destscrn]+(SCREENWIDTH*SCREENHEIGHT));
+#endif
+
+            *dst = *src++;
+            dst -= SCREENWIDTH;
+        }
+    }
+}
+#else
 void
 V_CopyRect
 ( int		srcx,
@@ -176,10 +242,6 @@ V_CopyRect
 { 
     byte*	src;
     byte*	dest; 
-
-    // mattp TODO: screens[4] is ST_WIDTH*ST_HEIGHT
-    if(srcscrn==4 || destscrn==4)
-        return;
 	 
 #ifdef RANGECHECK 
     if (srcx<0
@@ -207,7 +269,7 @@ V_CopyRect
 	dest += SCREENWIDTH; 
     } 
 } 
- 
+#endif
 
 //
 // V_DrawPatch
@@ -256,7 +318,7 @@ V_DrawPatch
         }
 
         // for each vertical post segment in column
-        while (column->topdelta != 0xff ) 
+        while (column->topdelta != 0xff) 
         { 
             source = (byte*)column + sizeof(column_t); 
             dest = desttop + column->topdelta; 
@@ -265,7 +327,6 @@ V_DrawPatch
             // for each pixel in post segment
             while (count--) 
             {
-                //if(dest >= (screens[scrn]+(SCREENWIDTH*34)))// && dest < (screens[scrn]+(SCREENWIDTH*(SCREENHEIGHT-40))))
                 *dest++ = *source++;
             }
 
