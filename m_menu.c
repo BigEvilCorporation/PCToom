@@ -107,6 +107,18 @@ char gammamsg[5][26] =
     GAMMALVL4
 };
 
+#if defined PORTRAIT
+char endmsg[NUM_QUITMESSAGES][80] =
+{
+    // DOOM1
+    "what's up, neck hurts?"
+};
+char endmsg2[NUM_QUITMESSAGES][80] =
+{
+    // QuitDOOM II messages
+    "what's up, neck hurts?"
+};
+#else
 char endmsg[NUM_QUITMESSAGES][80] =
 {
     // DOOM1
@@ -132,6 +144,7 @@ char endmsg2[NUM_QUITMESSAGES][80] =
     "just leave. when you come\nback, i'll be waiting with a bat.",
     "you're lucky i don't smack\nyou for thinking about leaving."
 };
+#endif
 
 // we are going to be entering a savegame string
 int			saveStringEnter;              
@@ -1791,7 +1804,7 @@ void M_Drawer (void)
 		start += i;
 	    }
 				
-	    x = 160 - M_StringWidth(string)/2;
+	    x = PORTRAIT_OFFS_X + 160 - M_StringWidth(string)/2;
 	    M_WriteText(x,y,string);
 	    y += SHORT(hu_font[0]->height);
 	}

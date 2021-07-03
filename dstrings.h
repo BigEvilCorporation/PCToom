@@ -46,7 +46,11 @@
 // Not done in french?
 
 // QuitDOOM messages
+#if defined PORTRAIT
+#define NUM_QUITMESSAGES   1
+#else
 #define NUM_QUITMESSAGES   8
+#endif
 
 extern char endmsg1[NUM_QUITMESSAGES][80];
 extern char endmsg2[NUM_QUITMESSAGES][80];
