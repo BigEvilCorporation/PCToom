@@ -53,7 +53,7 @@
 
 #include "m_menu.h"
 
-
+#define PORTRAIT_OFFS_X ((SCREENWIDTH-VIEWPORTWIDTH)/2)
 
 extern patch_t*		hu_font[HU_FONTSIZE];
 extern boolean		message_dontfuckwithme;
@@ -287,7 +287,7 @@ menu_t  MainDef =
     NULL,
     MainMenu,
     M_DrawMainMenu,
-    97,64,
+    97+PORTRAIT_OFFS_X,64,
     0
 };
 
@@ -322,7 +322,7 @@ menu_t  EpiDef =
     &MainDef,		// previous menu
     EpisodeMenu,	// menuitem_t ->
     M_DrawEpisode,	// drawing routine ->
-    48,63,              // x,y
+    48+PORTRAIT_OFFS_X,63,              // x,y
     ep1			// lastOn
 };
 
@@ -354,7 +354,7 @@ menu_t  NewDef =
     &EpiDef,		// previous menu
     NewGameMenu,	// menuitem_t ->
     M_DrawNewGame,	// drawing routine ->
-    48,63,              // x,y
+    48+PORTRAIT_OFFS_X,63,              // x,y
     hurtme		// lastOn
 };
 
@@ -394,7 +394,7 @@ menu_t  OptionsDef =
     &MainDef,
     OptionsMenu,
     M_DrawOptions,
-    60,37,
+    60+PORTRAIT_OFFS_X,37,
     0
 };
 
@@ -418,7 +418,7 @@ menu_t  ReadDef1 =
     &MainDef,
     ReadMenu1,
     M_DrawReadThis1,
-    280,185,
+    280+PORTRAIT_OFFS_X,185,
     0
 };
 
@@ -447,7 +447,7 @@ menu_t  ReadDef2 =
 #else
     M_DrawReadThisRetail,
 #endif
-    330,175,
+    330+PORTRAIT_OFFS_X,175,
     0
 };
 
@@ -477,7 +477,7 @@ menu_t  SoundDef =
     &OptionsDef,
     SoundMenu,
     M_DrawSound,
-    80,64,
+    80+PORTRAIT_OFFS_X,64,
     0
 };
 
@@ -511,7 +511,7 @@ menu_t  LoadDef =
     &MainDef,
     LoadMenu,
     M_DrawLoad,
-    80,54,
+    80+PORTRAIT_OFFS_X,54,
     0
 };
 
@@ -534,7 +534,7 @@ menu_t  SaveDef =
     &MainDef,
     SaveMenu,
     M_DrawSave,
-    80,54,
+    80+PORTRAIT_OFFS_X,54,
     0
 };
 
