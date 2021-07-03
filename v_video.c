@@ -300,7 +300,7 @@ V_DrawPatch
     w = SHORT(patch->width);
 
     // mattp TODO: screens[4] is ST_WIDTH*ST_HEIGHT
-    if(scrn==4)
+    if(scrn==BG)
         return;
 
     if (!scrn)
@@ -413,6 +413,70 @@ V_DrawPatch
 // Masks a column based masked pic to the screen.
 // Flips horizontally, e.g. to mirror face.
 //
+#if defined PORTRAIT
+void
+V_DrawPatchFlipped
+( int		x,
+  int		y,
+  int		scrn,
+  patch_t*	patch ) 
+{ 
+    int		count;
+    int		col; 
+    column_t*	column; 
+    byte*	desttop;
+    byte*	dest;
+    byte*	source; 
+    int		w;
+
+    y -= SHORT(patch->topoffset);
+    x -= SHORT(patch->leftoffset);
+    w = SHORT(patch->width);
+
+    // mattp TODO: screens[4] is ST_WIDTH*ST_HEIGHT
+    if(scrn==BG)
+        return;
+
+    if (!scrn)
+        V_MarkRect (y, SCREENWIDTH-1-x, SHORT(patch->height), SHORT(patch->width));
+
+    // transpose top/left to left/top
+    desttop = screens[scrn] + ((SCREENWIDTH-1-x)*SCREENWIDTH) + y;
+
+    // for each column in patch
+    for (col = 0; col < w; x++, col++)
+    { 
+        column = (column_t*)((byte*)patch + LONG(patch->columnofs[w-1-col]));
+
+        // skip overdraw until we're within range (means we've missed some UI placement in portrait mode)
+        if(desttop >= (screens[scrn]+(SCREENWIDTH*SCREENHEIGHT)))
+        {
+            desttop -= SCREENWIDTH;
+            continue;
+        }
+
+        // for each vertical post segment in column
+        while (column->topdelta != 0xff) 
+        { 
+            source = (byte*)column + sizeof(column_t); 
+            dest = desttop + column->topdelta; 
+            count = column->length; 
+                
+            // for each pixel in post segment
+            while (count--) 
+            {
+                *dest++ = *source++;
+            }
+
+            // next post segment
+            column = (column_t*)((byte*)column + column->length + 4); 
+        }
+
+        // next column
+        desttop -= SCREENWIDTH;
+    }			 
+} 
+#else
 void
 V_DrawPatchFlipped
 ( int		x,
@@ -428,7 +492,6 @@ V_DrawPatchFlipped
     byte*	dest;
     byte*	source; 
     int		w; 
-    return;
 	 
     y -= SHORT(patch->topoffset); 
     x -= SHORT(patch->leftoffset); 
@@ -472,7 +535,8 @@ V_DrawPatchFlipped
 				    + 4 ); 
 	} 
     }			 
-} 
+}
+#endif
 
 //
 // V_DrawPatchDirect
@@ -606,6 +670,50 @@ V_DrawPatchDirect
 // V_DrawBlock
 // Draw a linear block of pixels into the view buffer.
 //
+#if defined PORTRAIT
+void
+V_DrawBlock
+( int		x,
+  int		y,
+  int		scrn,
+  int		width,
+  int		height,
+  byte*		src ) 
+{ 
+    byte*	dest;
+    int     copyx,copyy;
+	 
+#ifdef RANGECHECK 
+    if (x<0
+	||x+width >SCREENWIDTH
+	|| y<0
+	|| y+height>SCREENHEIGHT 
+	|| (unsigned)scrn>4 )
+    {
+	I_Error ("Bad V_DrawBlock");
+    }
+#endif
+
+    // skip overdraw until we're within range (means we've missed some UI placement in portrait mode)
+    if(x < SCREENWIDTH-SCREENHEIGHT)
+    {
+        width -= (SCREENWIDTH-SCREENHEIGHT) - x;
+        x = SCREENWIDTH-SCREENHEIGHT;
+    }
+ 
+    V_MarkRect (y, SCREENWIDTH-1-x, height, width); 
+
+    for(copyy = 0; copyy < height; copyy++)
+    {
+        dest = screens[scrn] + (SCREENWIDTH-1-x)*SCREENWIDTH+copyy;
+        for(copyx = 0; copyx < width; copyx++)
+        {
+            *dest = *src++;
+	        dest -= SCREENWIDTH; 
+        }
+    } 
+} 
+#else
 void
 V_DrawBlock
 ( int		x,
@@ -639,7 +747,7 @@ V_DrawBlock
 	dest += SCREENWIDTH; 
     } 
 } 
- 
+#endif
 
 
 //
