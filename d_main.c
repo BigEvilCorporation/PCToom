@@ -432,7 +432,7 @@ void D_PageTicker (void)
 //
 void D_PageDrawer (void)
 {
-    V_DrawPatch (0,0, 0, W_CacheLumpName(pagename, PU_CACHE));
+    V_DrawPatchNonTransposed (0,0, 0, W_CacheLumpName(pagename, PU_CACHE));
 }
 
 
@@ -996,6 +996,12 @@ void D_DoomMain (void)
 	    D_AddFile (myargv[p]);
     }
 
+#if defined PORTRAIT
+    // force load the portrait additions
+    D_AddFile("TOOM.WAD");
+    modifiedgame = true;
+#endif
+
     p = M_CheckParm ("-playdemo");
 
     if (!p)
@@ -1097,6 +1103,7 @@ void D_DoomMain (void)
 		    I_Error("\nThis is not the registered version.");
     }
     
+#if !defined PORTRAIT // be quiet, fun police
     // Iff additonal PWAD files are used, print modified banner
     if (modifiedgame)
     {
@@ -1110,6 +1117,7 @@ void D_DoomMain (void)
 	    );
 	getchar ();
     }
+#endif
 	
 
     // Check and print which version is executed.
