@@ -70,18 +70,6 @@ enum { VERSION =  109 };
 #define VIEWPORTHEIGHT SCREENHEIGHT
 #endif
 
-// Size of statusbar.
-// Now sensitive for scaling.
-#define ST_HEIGHT	32*SCREEN_MUL
-#define ST_WIDTH	SCREENWIDTH
-#define ST_Y		(SCREENHEIGHT - ST_HEIGHT)
-
-//
-// Background and foreground screen numbers
-//
-#define BG 4
-#define FG 0
-
 #define	FRACBITS		16
 #define	FRACUNIT		(1<<FRACBITS)
 typedef int fixed_t;

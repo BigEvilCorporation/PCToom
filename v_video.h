@@ -74,7 +74,7 @@ V_DrawPatch
 
 #if defined PORTRAIT
 void
-V_DrawPatch
+V_DrawPatchNonTransposed
 ( int		x,
   int		y,
   int		scrn,

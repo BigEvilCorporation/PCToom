@@ -30,6 +30,10 @@
 
 #include "v_video.h"
 
+#define ST_HEIGHT	32*SCREEN_MUL
+#define ST_WIDTH	SCREENWIDTH
+#define BG 4
+
 
 // Each screen is [SCREENWIDTH*SCREENHEIGHT];
 //  mattp - except screens[4] which is [ST_WIDTH*ST_HEIGHT]
