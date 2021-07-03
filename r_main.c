@@ -687,16 +687,17 @@ void R_ExecuteSetViewSize (void)
 
     if (setblocks == 11)
     {
-	scaledviewwidth = SCREENWIDTH;
+	scaledviewwidth = VIEWPORTWIDTH;
 	viewheight = VIEWPORTHEIGHT;
     }
     else
     {
-	scaledviewwidth = setblocks*32;
 #if PORTRAIT
+    scaledviewwidth = VIEWPORTWIDTH;
 	viewheight = VIEWPORTHEIGHT;
 #else
 	viewheight = (setblocks*168/10)&~7;
+    scaledviewwidth = setblocks*32;
 #endif	
     }
     
@@ -724,7 +725,11 @@ void R_ExecuteSetViewSize (void)
 	spanfunc = R_DrawSpanLow;
     }
 
+#if PORTRAIT
+    R_InitBuffer (SCREENWIDTH, viewheight);
+#else
     R_InitBuffer (scaledviewwidth, viewheight);
+#endif
 	
     R_InitTextureMapping ();
     

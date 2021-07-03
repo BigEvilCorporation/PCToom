@@ -769,7 +769,7 @@ void R_FillBackScreen (void)
 
     char*	name;
 	
-    if (scaledviewwidth == 320)
+    if (scaledviewwidth == VIEWPORTWIDTH)
 	return;
 	
     if (commercial)
@@ -898,7 +898,7 @@ void R_DrawViewBorder (void)
     int		ofs;
     int		i; 
  
-    if (scaledviewwidth == SCREENWIDTH) 
+    if (scaledviewwidth == VIEWPORTWIDTH) 
 	return; 
   
     top = ((SCREENHEIGHT-SBARHEIGHT)-viewheight)/2; 

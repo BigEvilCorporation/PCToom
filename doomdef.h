@@ -65,8 +65,10 @@ enum { VERSION =  109 };
 
 // In portrait mode, viewport is WIDTH*WIDTH
 #if defined PORTRAIT
+#define VIEWPORTWIDTH SCREENHEIGHT
 #define VIEWPORTHEIGHT SCREENWIDTH
 #else
+#define VIEWPORTWIDTH SCREENWIDTH
 #define VIEWPORTHEIGHT SCREENHEIGHT
 #endif
 
