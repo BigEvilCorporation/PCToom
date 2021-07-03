@@ -56,6 +56,7 @@
 // STATUS BAR DATA
 //
 
+#define PORTRAIT_ADJUST_X (SCREENWIDTH-VIEWPORTWIDTH)
 #define PORTRAIT_ADJUST_Y (VIEWPORTHEIGHT-SCREENHEIGHT)
 
 // Palette indices.
@@ -106,7 +107,11 @@
 #define ST_GODFACE			(ST_NUMPAINFACES*ST_FACESTRIDE)
 #define ST_DEADFACE			(ST_GODFACE+1)
 
+#if defined PORTRAIT
+#define ST_FACESX			0 + PORTRAIT_ADJUST_X
+#else
 #define ST_FACESX			143
+#endif
 #define ST_FACESY			168 + PORTRAIT_ADJUST_Y
 
 #define ST_EVILGRINCOUNT		(2*TICRATE)
@@ -128,12 +133,20 @@
 
 // AMMO number pos.
 #define ST_AMMOWIDTH		3	
+#if defined PORTRAIT
+#define ST_AMMOX			70 + PORTRAIT_ADJUST_X
+#else
 #define ST_AMMOX			44
+#endif
 #define ST_AMMOY			171 + PORTRAIT_ADJUST_Y
 
 // HEALTH number pos.
 #define ST_HEALTHWIDTH		3	
+#if defined PORTRAIT
+#define ST_HEALTHX			123 + PORTRAIT_ADJUST_X
+#else
 #define ST_HEALTHX			90
+#endif
 #define ST_HEALTHY			171 + PORTRAIT_ADJUST_Y
 
 // Weapon pos.
@@ -151,20 +164,31 @@
 
 // ARMOR number pos.
 #define ST_ARMORWIDTH		3
+#if defined PORTRAIT
+#define ST_ARMORX			177 + PORTRAIT_ADJUST_X
+#else
 #define ST_ARMORX			221
+#endif
 #define ST_ARMORY			171 + PORTRAIT_ADJUST_Y
 
 // Key icon positions.
 #define ST_KEY0WIDTH		8
 #define ST_KEY0HEIGHT		5
-#define ST_KEY0X			239
 #define ST_KEY0Y			171 + PORTRAIT_ADJUST_Y
 #define ST_KEY1WIDTH		ST_KEY0WIDTH
-#define ST_KEY1X			239
 #define ST_KEY1Y			181 + PORTRAIT_ADJUST_Y
 #define ST_KEY2WIDTH		ST_KEY0WIDTH
-#define ST_KEY2X			239
 #define ST_KEY2Y			191 + PORTRAIT_ADJUST_Y
+
+#if defined PORTRAIT
+#define ST_KEY0X			189 + PORTRAIT_ADJUST_X
+#define ST_KEY1X			189 + PORTRAIT_ADJUST_X
+#define ST_KEY2X			189 + PORTRAIT_ADJUST_X
+#else
+#define ST_KEY0X			239
+#define ST_KEY1X			239
+#define ST_KEY2X			239
+#endif
 
 // Ammunition counter.
 #define ST_AMMO0WIDTH		3
@@ -494,7 +518,7 @@ void ST_refreshBackground(void)
     if (st_statusbaron)
     {
 #if defined PORTRAIT
-	V_DrawPatchNonTransposed(ST_X, 0, BG, sbar);
+	V_DrawPatchNonTransposed(ST_X + PORTRAIT_ADJUST_X, 0, BG, sbar);
 
 	if (netgame)
 	    V_DrawPatchNonTransposed(ST_FX, 0, BG, faceback);
@@ -1065,27 +1089,32 @@ void ST_drawWidgets(boolean refresh)
 
     STlib_updateNum(&w_ready, refresh);
 
+#if !defined PORTRAIT // doesn't fit in portrait mode
     for (i=0;i<4;i++)
     {
 	STlib_updateNum(&w_ammo[i], refresh);
 	STlib_updateNum(&w_maxammo[i], refresh);
     }
+#endif
 
     STlib_updatePercent(&w_health, refresh);
     STlib_updatePercent(&w_armor, refresh);
 
+#if !defined PORTRAIT // doesn't fit in portrait mode
     STlib_updateBinIcon(&w_armsbg, refresh);
 
     for (i=0;i<6;i++)
 	STlib_updateMultIcon(&w_arms[i], refresh);
+#endif
 
     STlib_updateMultIcon(&w_faces, refresh);
 
     for (i=0;i<3;i++)
 	STlib_updateMultIcon(&w_keyboxes[i], refresh);
 
+#if !defined PORTRAIT // doesn't fit in portrait mode
     STlib_updateNum(&w_frags, refresh);
-
+#endif
 }
 
 void ST_doRefresh(void)
@@ -1437,7 +1466,6 @@ void ST_createWidgets(void)
 		  &plyr->maxammo[3],
 		  &st_statusbaron,
 		  ST_MAXAMMO3WIDTH);
-
 }
 
 static boolean	st_stopped = true;

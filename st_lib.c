@@ -169,8 +169,10 @@ STlib_updatePercent
 ( st_percent_t*		per,
   int			refresh )
 {
+#if !defined PORTRAIT // % symbol won't fit
     if (refresh && *per->n.on)
 	V_DrawPatch(per->n.x, per->n.y, FG, per->p);
+#endif
     
     STlib_updateNum(&per->n, refresh);
 }
