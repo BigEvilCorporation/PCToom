@@ -53,7 +53,7 @@
 
 #include "m_menu.h"
 
-#define PORTRAIT_OFFS_X ((SCREENWIDTH-VIEWPORTWIDTH)/2)
+#define PORTRAIT_OFFS_X (SCREENWIDTH-VIEWPORTWIDTH)
 
 extern patch_t*		hu_font[HU_FONTSIZE];
 extern boolean		message_dontfuckwithme;
@@ -156,7 +156,11 @@ char			saveOldString[SAVESTRINGSIZE];
 boolean			inhelpscreens;
 boolean			menuactive;
 
+#if defined PORTRAIT
+#define SKULLXOFF		-23
+#else
 #define SKULLXOFF		-32
+#endif
 #define LINEHEIGHT		16
 
 extern boolean		sendpause;
@@ -300,7 +304,11 @@ menu_t  MainDef =
     NULL,
     MainMenu,
     M_DrawMainMenu,
-    97+PORTRAIT_OFFS_X,64,
+#if defined PORTRAIT
+    38,64, 
+#else
+    97,64,
+#endif
     0
 };
 
@@ -335,7 +343,11 @@ menu_t  EpiDef =
     &MainDef,		// previous menu
     EpisodeMenu,	// menuitem_t ->
     M_DrawEpisode,	// drawing routine ->
-    48+PORTRAIT_OFFS_X,63,              // x,y
+#if defined PORTRAIT
+    23,64, 
+#else
+    48,63,              // x,y
+#endif
     ep1			// lastOn
 };
 
@@ -367,7 +379,11 @@ menu_t  NewDef =
     &EpiDef,		// previous menu
     NewGameMenu,	// menuitem_t ->
     M_DrawNewGame,	// drawing routine ->
-    48+PORTRAIT_OFFS_X,63,              // x,y
+#if defined PORTRAIT
+    23,64, 
+#else
+    48,63,              // x,y
+#endif
     hurtme		// lastOn
 };
 
@@ -380,8 +396,10 @@ enum
 {
     endgame,
     messages,
+#if !defined PORTRAIT
     detail,
     scrnsize,
+#endif
     option_empty1,
     mousesens,
     option_empty2,
@@ -393,8 +411,10 @@ menuitem_t OptionsMenu[]=
 {
     {1,"M_ENDGAM",	M_EndGame,'e'},
     {1,"M_MESSG",	M_ChangeMessages,'m'},
+#if !defined PORTRAIT
     {1,"M_DETAIL",	M_ChangeDetail,'g'},
     {2,"M_SCRNSZ",	M_SizeDisplay,'s'},
+#endif
     {-1,"",0},
     {2,"M_MSENS",	M_ChangeSensitivity,'m'},
     {-1,"",0},
@@ -407,7 +427,11 @@ menu_t  OptionsDef =
     &MainDef,
     OptionsMenu,
     M_DrawOptions,
-    60+PORTRAIT_OFFS_X,37,
+#if defined PORTRAIT
+    23,37, 
+#else
+    60,37,
+#endif
     0
 };
 
@@ -431,7 +455,7 @@ menu_t  ReadDef1 =
     &MainDef,
     ReadMenu1,
     M_DrawReadThis1,
-    280+PORTRAIT_OFFS_X,185,
+    280,185,
     0
 };
 
@@ -460,7 +484,7 @@ menu_t  ReadDef2 =
 #else
     M_DrawReadThisRetail,
 #endif
-    330+PORTRAIT_OFFS_X,175,
+    330,175,
     0
 };
 
@@ -490,7 +514,11 @@ menu_t  SoundDef =
     &OptionsDef,
     SoundMenu,
     M_DrawSound,
-    80+PORTRAIT_OFFS_X,64,
+#if defined PORTRAIT
+    23,64, 
+#else
+    80,64,
+#endif
     0
 };
 
@@ -524,7 +552,11 @@ menu_t  LoadDef =
     &MainDef,
     LoadMenu,
     M_DrawLoad,
-    80+PORTRAIT_OFFS_X,54,
+#if defined PORTRAIT
+    23,54, 
+#else
+    80,54,
+#endif
     0
 };
 
@@ -547,7 +579,11 @@ menu_t  SaveDef =
     &MainDef,
     SaveMenu,
     M_DrawSave,
-    80+PORTRAIT_OFFS_X,54,
+#if defined PORTRAIT
+    23,54, 
+#else
+    80,54,
+#endif
     0
 };
 
@@ -591,12 +627,21 @@ void M_DrawLoad(void)
 {
     int             i;
 	
+#if defined PORTRAIT
+    V_DrawPatchDirect (22+PORTRAIT_OFFS_X,28,0,W_CacheLumpName("M_LOADG",PU_CACHE));
+    for (i = 0;i < load_end; i++)
+    {
+	M_DrawSaveLoadBorder(LoadDef.x+PORTRAIT_OFFS_X,LoadDef.y+LINEHEIGHT*i);
+	M_WriteText(LoadDef.x+PORTRAIT_OFFS_X,LoadDef.y+LINEHEIGHT*i,savegamestrings[i]);
+    }
+#else
     V_DrawPatchDirect (72,28,0,W_CacheLumpName("M_LOADG",PU_CACHE));
     for (i = 0;i < load_end; i++)
     {
 	M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
 	M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i]);
     }
+#endif
 }
 
 
@@ -610,7 +655,11 @@ void M_DrawSaveLoadBorder(int x,int y)
 	
     V_DrawPatchDirect (x-8,y+7,0,W_CacheLumpName("M_LSLEFT",PU_CACHE));
 	
+#if defined PORTRAIT
+    for (i = 0;i < 16;i++)
+#else
     for (i = 0;i < 24;i++)
+#endif
     {
 	V_DrawPatchDirect (x,y+7,0,W_CacheLumpName("M_LSCNTR",PU_CACHE));
 	x += 8;
@@ -659,6 +708,20 @@ void M_DrawSave(void)
 {
     int             i;
 	
+#if defined PORTRAIT
+    V_DrawPatchDirect (22+PORTRAIT_OFFS_X,28,0,W_CacheLumpName("M_SAVEG",PU_CACHE));
+    for (i = 0;i < load_end; i++)
+    {
+	M_DrawSaveLoadBorder(LoadDef.x+PORTRAIT_OFFS_X,LoadDef.y+LINEHEIGHT*i);
+	M_WriteText(LoadDef.x+PORTRAIT_OFFS_X,LoadDef.y+LINEHEIGHT*i,savegamestrings[i]);
+    }
+	
+    if (saveStringEnter)
+    {
+	i = M_StringWidth(savegamestrings[saveSlot]);
+	M_WriteText(LoadDef.x+PORTRAIT_OFFS_X + i,LoadDef.y+LINEHEIGHT*saveSlot,"_");
+    }
+#else
     V_DrawPatchDirect (72,28,0,W_CacheLumpName("M_SAVEG",PU_CACHE));
     for (i = 0;i < load_end; i++)
     {
@@ -671,6 +734,7 @@ void M_DrawSave(void)
 	i = M_StringWidth(savegamestrings[saveSlot]);
 	M_WriteText(LoadDef.x + i,LoadDef.y+LINEHEIGHT*saveSlot,"_");
     }
+#endif
 }
 
 //
@@ -800,7 +864,7 @@ void M_QuickLoad(void)
 void M_DrawReadThis1(void)
 {
     inhelpscreens = true;
-    V_DrawPatchDirect(0, 0, 0, W_CacheLumpName("HELP2", PU_CACHE));
+    V_DrawPatchDirectNonTransposed(0, 0, 0, W_CacheLumpName("HELP2", PU_CACHE));
 }
 
 
@@ -812,14 +876,14 @@ void M_DrawReadThis1(void)
 void M_DrawReadThis2(void)
 {
     inhelpscreens = true;
-    V_DrawPatchDirect(0, 0, 0, W_CacheLumpName("HELP1", PU_CACHE));
+    V_DrawPatchDirectNonTransposed(0, 0, 0, W_CacheLumpName("HELP1", PU_CACHE));
 }
 #endif
 
 void M_DrawReadThisRetail(void)
 {
     inhelpscreens = true;
-    V_DrawPatchDirect(0, 0, 0, W_CacheLumpName("HELP", PU_CACHE));
+    V_DrawPatchDirectNonTransposed(0, 0, 0, W_CacheLumpName("HELP", PU_CACHE));
 }
 
 
@@ -828,13 +892,23 @@ void M_DrawReadThisRetail(void)
 //
 void M_DrawSound(void)
 {
-    V_DrawPatchDirect (60,38,0,W_CacheLumpName("M_SVOL",PU_CACHE));
+#if defined PORTRAIT
+    V_DrawPatchDirect (20+PORTRAIT_OFFS_X,38,0,W_CacheLumpName("M_SVOL",PU_CACHE));
 
-    M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),
+    M_DrawThermo(SoundDef.x+10,SoundDef.y+LINEHEIGHT*(sfx_vol+1),
 		 16,sfxVolume);
 
-    M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),
+    M_DrawThermo(SoundDef.x+10,SoundDef.y+LINEHEIGHT*(music_vol+1),
 		 16,musicVolume);
+#else
+    V_DrawPatchDirect (60+PORTRAIT_OFFS_X,38,0,W_CacheLumpName("M_SVOL",PU_CACHE));
+
+    M_DrawThermo(SoundDef.x+PORTRAIT_OFFS_X,SoundDef.y+LINEHEIGHT*(sfx_vol+1),
+		 16,sfxVolume);
+
+    M_DrawThermo(SoundDef.x+PORTRAIT_OFFS_X,SoundDef.y+LINEHEIGHT*(music_vol+1),
+		 16,musicVolume);
+#endif
 }
 
 void M_Sound(int choice)
@@ -884,7 +958,7 @@ void M_MusicVol(int choice)
 //
 void M_DrawMainMenu(void)
 {
-    V_DrawPatchDirect (94+PORTRAIT_OFFS_X,2,0,W_CacheLumpName("M_DOOM",PU_CACHE));
+    V_DrawPatchDirect (94+(PORTRAIT_OFFS_X/2),2,0,W_CacheLumpName("M_DOOM",PU_CACHE));
 }
 
 
@@ -895,8 +969,13 @@ void M_DrawMainMenu(void)
 //
 void M_DrawNewGame(void)
 {
+#if defined PORTRAIT
+    V_DrawPatchDirect (36+PORTRAIT_OFFS_X,14,0,W_CacheLumpName("M_NEWG",PU_CACHE));
+    V_DrawPatchDirect (14+PORTRAIT_OFFS_X,38,0,W_CacheLumpName("M_SKILL",PU_CACHE));
+#else
     V_DrawPatchDirect (96,14,0,W_CacheLumpName("M_NEWG",PU_CACHE));
     V_DrawPatchDirect (54,38,0,W_CacheLumpName("M_SKILL",PU_CACHE));
+#endif
 }
 
 void M_NewGame(int choice)
@@ -921,7 +1000,11 @@ int     epi;
 
 void M_DrawEpisode(void)
 {
+#if defined PORTRAIT
+    V_DrawPatchDirect (20+PORTRAIT_OFFS_X,38,0,W_CacheLumpName("M_EPISOD",PU_CACHE));
+#else
     V_DrawPatchDirect (54,38,0,W_CacheLumpName("M_EPISOD",PU_CACHE));
+#endif
 }
 
 void M_VerifyNightmare(int ch)
@@ -970,6 +1053,15 @@ char	msgNames[2][9]		= {"M_MSGOFF","M_MSGON"};
 
 void M_DrawOptions(void)
 {
+#if defined PORTRAIT
+    V_DrawPatchDirect (30+PORTRAIT_OFFS_X,15,0,W_CacheLumpName("M_OPTTTL",PU_CACHE));
+
+    V_DrawPatchDirect (OptionsDef.x + 100 + PORTRAIT_OFFS_X,OptionsDef.y+LINEHEIGHT*messages,0,
+		       W_CacheLumpName(msgNames[showMessages],PU_CACHE));
+
+    M_DrawThermo(OptionsDef.x,OptionsDef.y+LINEHEIGHT*(mousesens+1),
+		 10,mouseSensitivity);
+#else
     V_DrawPatchDirect (108,15,0,W_CacheLumpName("M_OPTTTL",PU_CACHE));
 	
     V_DrawPatchDirect (OptionsDef.x + 175,OptionsDef.y+LINEHEIGHT*detail,0,
@@ -983,6 +1075,7 @@ void M_DrawOptions(void)
 	
     M_DrawThermo(OptionsDef.x,OptionsDef.y+LINEHEIGHT*(scrnsize+1),
 		 9,screenSize);
+#endif
 }
 
 void M_Options(int choice)
@@ -1222,16 +1315,16 @@ M_DrawThermo
     int		i;
 
     xx = x;
-    V_DrawPatchDirect (xx,y,0,W_CacheLumpName("M_THERML",PU_CACHE));
+    V_DrawPatchDirect (xx+PORTRAIT_OFFS_X,y,0,W_CacheLumpName("M_THERML",PU_CACHE));
     xx += 8;
     for (i=0;i<thermWidth;i++)
     {
-	V_DrawPatchDirect (xx,y,0,W_CacheLumpName("M_THERMM",PU_CACHE));
+	V_DrawPatchDirect (xx+PORTRAIT_OFFS_X,y,0,W_CacheLumpName("M_THERMM",PU_CACHE));
 	xx += 8;
     }
-    V_DrawPatchDirect (xx,y,0,W_CacheLumpName("M_THERMR",PU_CACHE));
+    V_DrawPatchDirect (xx+PORTRAIT_OFFS_X,y,0,W_CacheLumpName("M_THERMR",PU_CACHE));
 
-    V_DrawPatchDirect ((x+8) + thermDot*8,y,
+    V_DrawPatchDirect ((x+8)+PORTRAIT_OFFS_X + thermDot*8,y,
 		       0,W_CacheLumpName("M_THERMO",PU_CACHE));
 }
 
@@ -1242,7 +1335,7 @@ M_DrawEmptyCell
 ( menu_t*	menu,
   int		item )
 {
-    V_DrawPatchDirect (menu->x - 10,        menu->y+item*LINEHEIGHT - 1, 0,
+    V_DrawPatchDirect (menu->x - 10+PORTRAIT_OFFS_X,        menu->y+item*LINEHEIGHT - 1, 0,
 		       W_CacheLumpName("M_CELL1",PU_CACHE));
 }
 
@@ -1251,7 +1344,7 @@ M_DrawSelCell
 ( menu_t*	menu,
   int		item )
 {
-    V_DrawPatchDirect (menu->x - 10,        menu->y+item*LINEHEIGHT - 1, 0,
+    V_DrawPatchDirect (menu->x - 10+PORTRAIT_OFFS_X,        menu->y+item*LINEHEIGHT - 1, 0,
 		       W_CacheLumpName("M_CELL2",PU_CACHE));
 }
 
@@ -1804,7 +1897,7 @@ void M_Drawer (void)
 		start += i;
 	    }
 				
-	    x = PORTRAIT_OFFS_X + 160 - M_StringWidth(string)/2;
+	    x = (PORTRAIT_OFFS_X/2) + 160 - M_StringWidth(string)/2;
 	    M_WriteText(x,y,string);
 	    y += SHORT(hu_font[0]->height);
 	}
@@ -1818,7 +1911,7 @@ void M_Drawer (void)
 	currentMenu->routine();         // call Draw routine
     
     // DRAW MENU
-    x = currentMenu->x;
+    x = currentMenu->x + PORTRAIT_OFFS_X;
     y = currentMenu->y;
     max = currentMenu->numitems;
 

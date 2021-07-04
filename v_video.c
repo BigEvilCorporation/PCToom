@@ -604,9 +604,12 @@ V_DrawPatchDirect
         ++x;
     }
 }
+void
+V_DrawPatchDirectNonTransposed
 #else
 void
 V_DrawPatchDirect
+#endif
 ( int		x,
   int		y,
   int		scrn,
@@ -663,7 +666,6 @@ V_DrawPatchDirect
 	    desttop++;	// go to next byte, not next plane 
     }
 } 
-#endif
 
 
 //

@@ -72,15 +72,6 @@ V_DrawPatch
   int		scrn,
   patch_t*	patch);
 
-#if defined PORTRAIT
-void
-V_DrawPatchNonTransposed
-( int		x,
-  int		y,
-  int		scrn,
-  patch_t*	patch);
-#endif
-
 void
 V_DrawPatchDirect
 ( int		x,
@@ -88,6 +79,21 @@ V_DrawPatchDirect
   int		scrn,
   patch_t*	patch );
 
+#if defined PORTRAIT
+void
+V_DrawPatchNonTransposed
+( int		x,
+  int		y,
+  int		scrn,
+  patch_t*	patch);
+
+void
+V_DrawPatchDirectNonTransposed
+( int		x,
+  int		y,
+  int		scrn,
+  patch_t*	patch );
+#endif
 
 // Draw a linear block of pixels into the view buffer.
 void
