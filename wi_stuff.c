@@ -41,6 +41,8 @@
 
 #include "wi_stuff.h"
 
+#define PORTRAIT_OFFS_X (SCREENWIDTH-VIEWPORTWIDTH)
+
 //
 // Data needed to add patches to full screen intermission pics.
 // Patches are statistics messages, and animations.
@@ -418,13 +420,13 @@ void WI_drawLF(void)
     int y = WI_TITLEY;
 
     // draw <LevelName> 
-    V_DrawPatch((SCREENWIDTH - SHORT(lnames[wbs->last]->width))/2,
+    V_DrawPatch(((SCREENWIDTH - SHORT(lnames[wbs->last]->width))/2) + (PORTRAIT_OFFS_X/2),
 		y, FB, lnames[wbs->last]);
 
     // draw "Finished!"
     y += (5*SHORT(lnames[wbs->last]->height))/4;
     
-    V_DrawPatch((SCREENWIDTH - SHORT(finished->width))/2,
+    V_DrawPatch(((SCREENWIDTH - SHORT(finished->width))/2) + (PORTRAIT_OFFS_X/2),
 		y, FB, finished);
 }
 
@@ -436,13 +438,13 @@ void WI_drawEL(void)
     int y = WI_TITLEY;
 
     // draw "Entering"
-    V_DrawPatch((SCREENWIDTH - SHORT(entering->width))/2,
+    V_DrawPatch(((SCREENWIDTH - SHORT(entering->width))/2) + (PORTRAIT_OFFS_X/2),
 		y, FB, entering);
 
     // draw level
     y += (5*SHORT(lnames[wbs->next]->height))/4;
 
-    V_DrawPatch((SCREENWIDTH - SHORT(lnames[wbs->next]->width))/2,
+    V_DrawPatch(((SCREENWIDTH - SHORT(lnames[wbs->next]->width))/2) + (PORTRAIT_OFFS_X/2),
 		y, FB, lnames[wbs->next]);
 
 }
@@ -483,8 +485,13 @@ WI_drawOnLnode
 
     if (fits && i<2)
     {
+#if PORTRAIT
+	V_DrawPatch(SCREENWIDTH-1-lnodes[wbs->epsd][n].y, lnodes[wbs->epsd][n].x,
+		    FB, c[i]);
+#else
 	V_DrawPatch(lnodes[wbs->epsd][n].x, lnodes[wbs->epsd][n].y,
 		    FB, c[i]);
+#endif
     }
     else
     {
@@ -596,8 +603,10 @@ void WI_drawAnimatedBack(void)
     {
 	a = &anims[wbs->epsd][i];
 
+#if !defined PORTRAIT // mattp - TODO
 	if (a->ctr >= 0)
 	    V_DrawPatch(a->loc.x, a->loc.y, FB, a->p[a->ctr]);
+#endif
     }
 
 }
@@ -1559,7 +1568,7 @@ void WI_loadData(void)
 
     // background
     bg = W_CacheLumpName(name, PU_CACHE);    
-    V_DrawPatch(0, 0, 1, bg);
+    V_DrawPatchNonTransposed(0, 0, 1, bg);
 
 
     // UNUSED unsigned char *pic = screens[1];
