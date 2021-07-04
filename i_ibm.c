@@ -1177,6 +1177,10 @@ void I_Quit(void)
     int386(0x10, (union REGS *)&regs, &regs); // Set text pos
     printf("\n");
 
+#if defined PORTRAIT
+    printf("Balls and farts.");
+#endif
+
     exit(0);
 }
 
