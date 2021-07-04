@@ -274,8 +274,13 @@ void R_DrawColumnLow (void)
 //
 // Spectre/Invisibility.
 //
-#define FUZZTABLE		50 
+#define FUZZTABLE		50
+
+#if defined PORTRAIT
+#define FUZZOFF	1
+#else
 #define FUZZOFF	(SCREENWIDTH/4)
+#endif
 
 
 int	fuzzoffset[FUZZTABLE] =
@@ -347,9 +352,14 @@ void R_DrawFuzzColumn (void)
     }
     else
     {
+#if defined PORTRAIT
+    // mattp: why was this setting up outp/outpw for direct access? we're writing to the internal buffers
+    dest = ylookup[dc_yl] + columnofs[dc_x];
+#else
 	outpw (GC_INDEX,GC_READMAP+((dc_x&3)<<8) ); 
 	outp (SC_INDEX+1,1<<(dc_x&3)); 
 	dest = destview + dc_yl*80 + (dc_x>>2); 
+#endif
     }
 
     // Looks familiar.
@@ -371,12 +381,15 @@ void R_DrawFuzzColumn (void)
 	if (++fuzzpos == FUZZTABLE) 
 	    fuzzpos = 0;
 	
+#if defined PORTRAIT
+    dest += 1;
+#else
 	dest += SCREENWIDTH/4;
+#endif
 
 	frac += fracstep; 
     } while (count--); 
-} 
- 
+}
   
  
 
