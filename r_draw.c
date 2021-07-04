@@ -42,6 +42,8 @@
 // status bar height at bottom of screen
 #define SBARHEIGHT		32
 
+#define PORTRAIT_OFFS_X (SCREENWIDTH-VIEWPORTWIDTH)
+
 //
 // All drawing to the view buffer is accomplished in this file.
 // The other refresh files only know about ccordinates,
@@ -572,7 +574,7 @@ void R_DrawSpan (void)
 	//  re-index using light/colormap.
 #if defined PORTRAIT
 	*dest = ds_colormap[ds_source[spot]];
-    dest += SCREENWIDTH;
+    dest -= SCREENWIDTH;
 #else
 	*dest++ = ds_colormap[ds_source[spot]];
 #endif
@@ -736,7 +738,7 @@ R_InitBuffer
     // Column offset. For windows.
     for (i=0 ; i<width ; i++) 
 #if defined PORTRAIT
-	columnofs[i] = screens[0] + (i+viewwindowy)*SCREENWIDTH;
+	columnofs[width - 1 - i] = screens[0] + (i + viewwindowy - PORTRAIT_OFFS_X)*SCREENWIDTH;
 #else
 	columnofs[i] = viewwindowx + i;
 #endif	
